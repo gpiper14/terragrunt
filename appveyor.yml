@@ -2,7 +2,7 @@ image:
   - Visual Studio 2017
   - Ubuntu
 version: 1.0.{build}-{appveyor_repo_commit}
-stack: go 1.10
+stack: go
 environment:
   GOTESTTIMEOUT: 45m
   LOGPARSERVERSION: v0.13.8
@@ -62,9 +62,9 @@ for:
       - sh: whoami
       - sh: echo $PATH
       - sh: curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o /tmp/terraform_linux_amd64.zip
-      - sh: unzip /tmp/terraform_linux_amd64.zip -d /usr/bin
-      - sh: curl "https://github.com/gruntwork-io/terratest/releases/download/${LOGPARSERVERSION}/terratest_log_parser_linux_amd64" -o /usr/bin/terratest_log_parser
-      - sh: chmod 0755 /usr/bin/terraform /usr/bin/terratest_log_parser
+      - sh: unzip /tmp/terraform_linux_amd64.zip -d $HOME/bin
+      - sh: curl "https://github.com/gruntwork-io/terratest/releases/download/${LOGPARSERVERSION}/terratest_log_parser_linux_amd64" -o $HOME/bin/terratest_log_parser
+      - sh: chmod 0755 $HOME/bin/terraform $HOM/bin/terratest_log_parser
     install:
       - sh: apt-get install go-dep
     test_script:
