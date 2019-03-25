@@ -1,5 +1,13 @@
+image:
+  - Visual Studio 2017
+  - Ubuntu
 version: 1.0.{build}
-clone_folder: c:\gopath\src\github.com\%APPVEYOR_REPO_NAME%
+environment:
+  GOTESTTIMEOUT: 45m
+  LOGPARSERVERSION: v0.13.8
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
+  matrix:
+  - TERRAFORMVERSION: 0.11.13
 init:
   - go version
   - go env
@@ -10,13 +18,6 @@ init:
   - set PATH=%PATH%;C:\Tools\terraform\;C:\Tools\logparser\
 install:
   - choco install dep
-environment:
-  GOPATH: c:\gopath
-  GOTESTTIMEOUT: 45m
-  LOGPARSERVERSION: v0.13.8
-  TERRAGRUNT_DOWNLOAD: C:\.terragrunt-cache
-  matrix:
-  - TERRAFORMVERSION: 0.11.13
 build_script:
   - dep ensure
 test_script:
@@ -33,3 +34,28 @@ on_finish:
   - ps: $wc = New-Object 'System.Net.WebClient'
   - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path ./logs/unit/report.xml))
   - ps: $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path ./logs/integration/report.xml))
+
+for:
+  -
+    matrix:
+      only:
+        - image: Visual Studio 2017
+    clone_folder: c:\gopath\src\github.com\%APPVEYOR_REPO_NAME%
+    environment:
+      GOPATH: c:\gopath
+      TERRAGRUNT_DOWNLOAD: C:\.terragrunt-cache
+    test_script:
+      - ps: write-host "for-matrix override test script 1"
+
+  -
+    matrix:
+      only:
+        - image: Ubuntu
+      pull_requests:
+        do_not_increment_build_number: true # this setting is ignored
+      allow_failures:
+        - platform: x64 # this setting is ignored
+    environment:
+      my_var2: overridden-value2
+    test_script:
+      - sh: echo for-matrix override build script
