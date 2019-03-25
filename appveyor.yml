@@ -1,7 +1,7 @@
 image:
   - Visual Studio 2017
   - Ubuntu
-version: 1.0.{build}
+version: 1.0.{build}-{appveyor_repo_commit}
 environment:
   GOTESTTIMEOUT: 45m
   LOGPARSERVERSION: v0.13.8
