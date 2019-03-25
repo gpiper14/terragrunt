@@ -59,7 +59,7 @@ for:
     init:
 #      - sh: go version
 #      - sh: go env
-      - sh: go whoami
+      - sh: whoami
       - sh: echo $PATH
       - sh: curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o /tmp/terraform_linux_amd64.zip
       - sh: unzip /tmp/terraform_linux_amd64.zip -d /usr/bin
