@@ -64,7 +64,7 @@ for:
       - sh: curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o /tmp/terraform_linux_amd64.zip
       - sh: unzip /tmp/terraform_linux_amd64.zip -d $HOME/bin
       - sh: curl "https://github.com/gruntwork-io/terratest/releases/download/${LOGPARSERVERSION}/terratest_log_parser_linux_amd64" -o $HOME/bin/terratest_log_parser
-      - sh: chmod 0755 $HOME/bin/terraform $HOM/bin/terratest_log_parser
+      - sh: chmod 0755 $HOME/bin/terraform $HOME/bin/terratest_log_parser
     install:
       - sh: apt-get install go-dep
     test_script:
