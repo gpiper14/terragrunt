@@ -60,7 +60,7 @@ for:
 #      - sh: go version
 #      - sh: go env
       - sh: curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o /tmp/terraform_linux_amd64.zip
-      - sh: unzip /tmp/terraform_windows_amd64.zip -d /usr/bin
+      - sh: unzip /tmp/terraform_linux_amd64.zip -d /usr/bin
       - sh: curl "https://github.com/gruntwork-io/terratest/releases/download/${LOGPARSERVERSION}/terratest_log_parser_linux_amd64" -o /usr/bin/terratest_log_parser
       - sh: chmod 0755 /usr/bin/terraform /usr/bin/terratest_log_parser
     install:
