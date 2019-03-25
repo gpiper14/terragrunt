@@ -2,30 +2,21 @@ image:
   - Visual Studio 2017
   - Ubuntu
 version: 1.0.{build}-{appveyor_repo_commit}
+stack: go 1.10
 environment:
   GOTESTTIMEOUT: 45m
   LOGPARSERVERSION: v0.13.8
   APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
   - TERRAFORMVERSION: 0.11.13
-init:
-  - go version
-  - go env
-  - pwsh: Invoke-RestMethod -Method Get -Uri "https://releases.hashicorp.com/terraform/$($env:TERRAFORMVERSION)/terraform_$($env:TERRAFORMVERSION)_windows_amd64.zip" -OutFile "c:/terraform_windows_amd64.zip"
-  - pwsh: Expand-Archive -Path "c:/terraform_windows_amd64.zip" -Destination "C:/Tools/terraform"
-  - mkdir "C:/Tools/logparser"
-  - pwsh: Invoke-WebRequest -Method Get -Uri "https://github.com/gruntwork-io/terratest/releases/download/$($env:LOGPARSERVERSION)/terratest_log_parser_windows_amd64.exe" -OutFile "C:/Tools/logparser/terratest_log_parser.exe"
-  - set PATH=%PATH%;C:\Tools\terraform\;C:\Tools\logparser\
-install:
-  - choco install dep
 build_script:
   - dep ensure
 test_script:
   - mkdir logs
-  - pwsh: go test -v -parallel 1 $(go list ./... | where-object { $_ -notlike "*/test" }) | Tee-Object -FilePath 'logs/unit.log'
-  - terratest_log_parser.exe --testlog logs/unit.log --outputdir ./logs/unit/
-  - pwsh: go test -v $(go list ./... | where-object { $_ -like "*/test" }) | Tee-Object -FilePath 'logs/integration.log'
-  - terratest_log_parser.exe --testlog logs/integration.log --outputdir ./logs/integration/
+#  - pwsh: go test -v -parallel 1 $(go list ./... | where-object { $_ -notlike "*/test" }) | Tee-Object -FilePath 'logs/unit.log'
+#  - terratest_log_parser.exe --testlog logs/unit.log --outputdir ./logs/unit/
+#  - pwsh: go test -v $(go list ./... | where-object { $_ -like "*/test" }) | Tee-Object -FilePath 'logs/integration.log'
+#  - terratest_log_parser.exe --testlog logs/integration.log --outputdir ./logs/integration/
 artifacts:
   - path: logs
     name: test_logs
@@ -40,10 +31,20 @@ for:
     matrix:
       only:
         - image: Visual Studio 2017
-    clone_folder: c:\gopath\src\github.com\%APPVEYOR_REPO_NAME%
+    clone_folder: c:\gopath\src\github.com\$project
     environment:
       GOPATH: c:\gopath
       TERRAGRUNT_DOWNLOAD: C:\.terragrunt-cache
+    init:
+      - go version
+      - go env
+      - pwsh: Invoke-RestMethod -Method Get -Uri "https://releases.hashicorp.com/terraform/$($env:TERRAFORMVERSION)/terraform_$($env:TERRAFORMVERSION)_windows_amd64.zip" -OutFile "c:/terraform_windows_amd64.zip"
+      - pwsh: Expand-Archive -Path "c:/terraform_windows_amd64.zip" -Destination "C:/Tools/terraform"
+      - mkdir "C:/Tools/logparser"
+      - pwsh: Invoke-WebRequest -Method Get -Uri "https://github.com/gruntwork-io/terratest/releases/download/$($env:LOGPARSERVERSION)/terratest_log_parser_windows_amd64.exe" -OutFile "C:/Tools/logparser/terratest_log_parser.exe"
+      - set PATH=%PATH%;C:\Tools\terraform\;C:\Tools\logparser\
+    install:
+      - choco install dep
     test_script:
       - ps: write-host "for-matrix override test script 1"
 
@@ -51,7 +52,18 @@ for:
     matrix:
       only:
         - image: Ubuntu
+    clone_folder: /usr/go/src/github.com/$project
     environment:
-      my_var2: overridden-value2
+      GOPATH: /usr/go/
+      TERRAGRUNT_DOWNLOAD: /usr/.terragrunt-cache
+    init:
+      - go version
+      - go env
+      - sh: curl "https://releases.hashicorp.com/terraform/${TERRAFORMVERSION}/terraform_${TERRAFORMVERSION}_linux_amd64.zip" -o /tmp/terraform_linux_amd64.zip
+      - sh: unzip /tmp/terraform_windows_amd64.zip -Destination /usr/bin
+      - sh: curl "https://github.com/gruntwork-io/terratest/releases/download/${LOGPARSERVERSION}/terratest_log_parser_linux_amd64" -o /usr/bin/terratest_log_parser
+      - sh: chmod 0755 /usr/bin/terraform /usr/bin/terratest_log_parser
+    install:
+      - apt-get install go-dep
     test_script:
       - sh: echo for-matrix override build script
