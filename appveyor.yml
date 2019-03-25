@@ -51,10 +51,6 @@ for:
     matrix:
       only:
         - image: Ubuntu
-      pull_requests:
-        do_not_increment_build_number: true # this setting is ignored
-      allow_failures:
-        - platform: x64 # this setting is ignored
     environment:
       my_var2: overridden-value2
     test_script:
