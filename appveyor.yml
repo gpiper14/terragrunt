@@ -8,7 +8,7 @@ environment:
   LOGPARSERVERSION: v0.13.8
   APPVEYOR_YML_DISABLE_PS_LINUX: true
   matrix:
-  - TERRAFORMVERSION: 0.11.13
+  - TERRAFORM_VERSION: 0.11.13
 build_script:
   - dep ensure
 test_script:
@@ -38,7 +38,7 @@ for:
     init:
       - go version
       - go env
-      - pwsh: Invoke-RestMethod -Method Get -Uri "https://releases.hashicorp.com/terraform/$($env:TERRAFORMVERSION)/terraform_$($env:TERRAFORMVERSION)_windows_amd64.zip" -OutFile "c:/terraform_windows_amd64.zip"
+      - pwsh: Invoke-RestMethod -Method Get -Uri "https://releases.hashicorp.com/terraform/$($env:TERRAFORM_VERSION)/terraform_$($env:TERRAFORM_VERSION)_windows_amd64.zip" -OutFile "c:/terraform_windows_amd64.zip"
       - pwsh: Expand-Archive -Path "c:/terraform_windows_amd64.zip" -Destination "C:/Tools/terraform"
       - mkdir "C:/Tools/logparser"
       - pwsh: Invoke-WebRequest -Method Get -Uri "https://github.com/gruntwork-io/terratest/releases/download/$($env:LOGPARSERVERSION)/terratest_log_parser_windows_amd64.exe" -OutFile "C:/Tools/logparser/terratest_log_parser.exe"
@@ -57,13 +57,13 @@ for:
       GOPATH: /usr/go/
       TERRAGRUNT_DOWNLOAD: /usr/.terragrunt-cache
     init:
-      - go version
-      - go env
-      - sh: curl "https://releases.hashicorp.com/terraform/${TERRAFORMVERSION}/terraform_${TERRAFORMVERSION}_linux_amd64.zip" -o /tmp/terraform_linux_amd64.zip
+#      - sh: go version
+#      - sh: go env
+      - sh: curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" -o /tmp/terraform_linux_amd64.zip
       - sh: unzip /tmp/terraform_windows_amd64.zip -Destination /usr/bin
       - sh: curl "https://github.com/gruntwork-io/terratest/releases/download/${LOGPARSERVERSION}/terratest_log_parser_linux_amd64" -o /usr/bin/terratest_log_parser
       - sh: chmod 0755 /usr/bin/terraform /usr/bin/terratest_log_parser
     install:
-      - apt-get install go-dep
+      - sh: apt-get install go-dep
     test_script:
       - sh: echo for-matrix override build script
